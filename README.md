@@ -227,6 +227,74 @@ curl -X POST http://localhost:8080/api/users -H "Content-Type: application/json"
 └── README.md                # This file
 ```
 
+## Testing
+
+This project includes a comprehensive test suite to ensure all components function as expected:
+
+### Unit Tests
+
+The handlers package includes unit tests for all API endpoints, which verify:
+- Correct HTTP status codes are returned
+- Response body structure and content is valid
+- Error handling works as expected
+
+Run the unit tests with:
+
+```bash
+go test ./handlers -v
+```
+
+### Integration Tests
+
+The tests directory contains integration tests that verify the complete API flow using an HTTP test server. These tests:
+- Set up a full HTTP server with all routes
+- Test each endpoint with real HTTP requests
+- Verify responses, including status codes and JSON payloads
+- Ensure middleware is applied correctly
+
+Run the integration tests with:
+
+```bash
+go test ./tests -v
+```
+
+### Load Testing
+
+The project includes a comprehensive load testing setup using k6, InfluxDB, and Grafana for metrics visualization. The load testing components are organized in the `tests` directory.
+
+The load tests perform a variety of scenarios:
+
+- Health check endpoint performance
+- Version endpoint checks
+- Home page response time
+- Listing all users (GET /api/users)  
+- Getting users by ID, with both valid and invalid IDs
+- Creating new users with random data
+
+Each endpoint is monitored for:
+- Response times (p95, p99 percentiles)
+- Success/failure rates
+- Correct response formats and status codes
+
+To run the load tests:
+
+1. Ensure your API is running (by default on port 8080)
+2. Execute the load test script:
+
+```bash
+cd tests
+./run-loadtest.sh
+```
+
+The script will:
+
+- Start InfluxDB and Grafana containers for metrics collection and visualization
+- Run k6 load tests against your API endpoints
+- Store the results in InfluxDB
+- Provide access to visualize performance metrics in Grafana (http://localhost:3000)
+
+Detailed instructions for load testing can be found in [tests/README.md](tests/README.md).
+
 ## CI/CD Pipeline
 
 This project uses GitHub Actions for continuous integration and deployment. The status of these workflows is displayed as badges at the top of this README:
