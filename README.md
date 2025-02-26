@@ -2,6 +2,12 @@
 
 A RESTful API web service built with Go, featuring user management endpoints.
 
+[![CI/CD Pipeline](https://github.com/kakkoyun/demo-web-service/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/kakkoyun/demo-web-service/actions/workflows/ci-cd.yml)
+[![Security Scan](https://github.com/kakkoyun/demo-web-service/actions/workflows/security.yml/badge.svg)](https://github.com/kakkoyun/demo-web-service/actions/workflows/security.yml)
+[![Go Version](https://img.shields.io/badge/Go-1.24-blue)](https://golang.org/doc/go1.24)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![Release](https://img.shields.io/github/v/release/kakkoyun/demo-web-service?include_prereleases)](https://github.com/kakkoyun/demo-web-service/releases)
+
 ## Features
 
 - RESTful API endpoints for user management
@@ -220,6 +226,24 @@ curl -X POST http://localhost:8080/api/users -H "Content-Type: application/json"
 ├── go.sum                   # Go module checksums
 └── README.md                # This file
 ```
+
+## CI/CD Pipeline
+
+This project uses GitHub Actions for continuous integration and deployment. The status of these workflows is displayed as badges at the top of this README:
+
+- **CI/CD Pipeline**: Shows the status of tests, code verification, and builds
+- **Security Scan**: Displays the status of security scans that check for vulnerabilities
+- **Go Version**: Indicates the Go version used by the project
+- **License**: Shows the project's license type
+- **Release**: Shows the latest release version
+
+The CI/CD pipeline includes:
+
+- Automated testing with coverage reporting
+- Code quality checks using golangci-lint
+- Documentation verification with embedmd
+- Automated builds for multiple platforms
+- Security scanning with Gosec and govulncheck
 
 ## License
 

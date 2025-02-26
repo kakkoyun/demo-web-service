@@ -108,6 +108,11 @@ func jsonResponse(w http.ResponseWriter, status int, data interface{}) {
 	}
 }
 
+// JSONResponse is an exported version of jsonResponse that can be used by other packages
+func JSONResponse(w http.ResponseWriter, status int, data interface{}) {
+	jsonResponse(w, status, data)
+}
+
 // errorResponse sends an error response
 func errorResponse(w http.ResponseWriter, status int, message string) {
 	slog.Warn("Sending error response", "status", status, "message", message)

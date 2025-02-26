@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"runtime/debug"
 	"syscall"
 	"time"
 
@@ -16,6 +17,16 @@ import (
 func main() {
 	// Initialize structured logger
 	logger := setupLogger()
+
+	// Get build info
+	buildInfo := getBuildInfo()
+
+	// Log version information
+	logger.Info("Starting application",
+		"version", buildInfo.Version,
+		"module", buildInfo.Module,
+		"goVersion", buildInfo.GoVersion,
+	)
 
 	// Load configuration
 	cfg := config.LoadConfig()
@@ -30,6 +41,8 @@ func main() {
 	mux.HandleFunc("GET /api/users", handlers.GetUsersHandler)
 	mux.HandleFunc("POST /api/users", handlers.CreateUserHandler)
 	mux.HandleFunc("GET /api/users/{id}", handlers.GetUserHandler)
+	// Add version endpoint
+	mux.HandleFunc("GET /api/version", versionHandler)
 
 	logger.Info("Routes configured")
 
@@ -75,6 +88,47 @@ func main() {
 
 	logger.Info("Server exited properly")
 	os.Exit(0)
+}
+
+// VersionInfo stores application version information
+type VersionInfo struct {
+	Version   string `json:"version"`
+	Module    string `json:"module"`
+	GoVersion string `json:"goVersion"`
+}
+
+// getBuildInfo retrieves the build information from the binary
+func getBuildInfo() VersionInfo {
+	info, ok := debug.ReadBuildInfo()
+	if !ok {
+		return VersionInfo{
+			Version:   "dev",
+			Module:    "unknown",
+			GoVersion: "unknown",
+		}
+	}
+
+	// Extract the main module info
+	var versionInfo VersionInfo
+	versionInfo.Module = info.Main.Path
+	versionInfo.Version = info.Main.Version
+	versionInfo.GoVersion = info.GoVersion
+
+	// If version isn't set (common in development builds), use a default
+	if versionInfo.Version == "" {
+		versionInfo.Version = "dev"
+	}
+
+	return versionInfo
+}
+
+// versionHandler returns the application version information
+func versionHandler(w http.ResponseWriter, r *http.Request) {
+	slog.Debug("Version information requested", "remote_addr", r.RemoteAddr)
+
+	buildInfo := getBuildInfo()
+
+	handlers.JSONResponse(w, http.StatusOK, buildInfo)
 }
 
 // setupLogger configures and returns a structured logger

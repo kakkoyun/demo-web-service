@@ -63,6 +63,10 @@ lint:
 	@echo "Running linter..."
 	@go tool golangci-lint run ./...
 
+govulncheck:
+	@echo "Running vulnerability scanner..."
+	@go tool govulncheck ./...
+
 fix:
 	@echo "Running linter fix..."
 	@go tool golangci-lint run ./... --fix
