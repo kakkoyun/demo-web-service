@@ -1,52 +1,44 @@
 run:
   # Timeout for analysis, e.g. 30s, 5m
   timeout: 5m
-  
   # Include test files or not
   tests: true
-
 # Linters settings
 linters-settings:
   errcheck:
     # Check for unchecked errors in type assertions: `a := b.(MyStruct)`
     check-type-assertions: true
-    
   goimports:
     # Put imports beginning with prefix after 3rd-party packages
     local-prefixes: github.com/kakkoyun/demo-web-service
-    
   govet:
     # Enable all analyzers
     enable-all: true
-    
   misspell:
     # Correct spellings using locale preferences
     locale: US
-
 # Enabled linters
 linters:
   enable:
-    - errcheck      # Detect unchecked errors
-    - gosimple      # Simplify code
-    - govet         # Detect suspicious constructs
-    - ineffassign   # Detect unused assignments
-    - staticcheck   # Go static analysis
-    - typecheck     # Type check
-    - unused        # Detect unused constants, variables, functions and types
-    - gofmt         # Check if code was gofmt-ed
-    - goimports     # Check imports
-    - misspell      # Fix misspellings
-    - unconvert     # Remove unnecessary type conversions
-    - revive        # Fast, configurable, extensible linter for Go
-
+    - errcheck # Detect unchecked errors
+    - gosimple # Simplify code
+    - govet # Detect suspicious constructs
+    - ineffassign # Detect unused assignments
+    - staticcheck # Go static analysis
+    - typecheck # Type check
+    - unused # Detect unused constants, variables, functions and types
+    - gofmt # Check if code was gofmt-ed
+    - goimports # Check imports
+    - misspell # Fix misspellings
+    - unconvert # Remove unnecessary type conversions
+    - revive # Fast, configurable, extensible linter for Go
 # Issues configuration
 issues:
   # Maximum count of issues with the same text
   max-same-issues: 3
-  
   # Exclude some linters from running on tests files
   exclude-rules:
     - path: _test\.go
       linters:
         - errcheck
-        - gosec 
+        - gosec

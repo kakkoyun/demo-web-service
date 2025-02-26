@@ -1,0 +1,18 @@
+yaml:
+  line_ending: lf
+  indentation:
+    spaces: 2
+    indent_sequences: consistent
+  line_length: 120
+  include_document_start: false
+  scanner:
+    include:
+      - '*.yml'
+      - '*.yaml'
+    exclude:
+      - 'vendor/'
+      - 'node_modules/'
+  formatter:
+    retain_line_breaks: true
+    scan_folded_as_literal: true
+    emit_line_comments: true 

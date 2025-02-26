@@ -1,0 +1,18 @@
+# Prettier configuration for demo-web-service
+# https://prettier.io/docs/en/options.html
+# Specify the line length that the printer will wrap on
+printWidth: 100
+# Number of spaces per indentation-level
+tabWidth: 2
+# Use spaces instead of tabs
+useTabs: false
+# Print semicolons at the ends of statements
+semi: true
+# Use single quotes instead of double quotes
+singleQuote: false
+# Print trailing commas wherever possible in multi-line comma-separated syntactic structures
+trailingComma: "all"
+# Include parentheses around a sole arrow function parameter
+arrowParens: "always"
+# Consistent end of line (use native line endings)
+endOfLine: "lf"

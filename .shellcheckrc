@@ -1,0 +1,17 @@
+# Shellcheck configuration for demo-web-service
+# https://www.shellcheck.net/wiki/ShellCheck_Directive
+
+# Allow following external sources
+external-sources=true
+
+# Do not enforce POSIX compatibility
+shell=bash
+
+# Allow using 'source' instead of '.'
+disable=SC1091
+
+# Do not warn about missing optional arguments
+disable=SC2120
+
+# Suggest explicitly using -n in [ $var ]
+enable=avoid-nullary-conditions 

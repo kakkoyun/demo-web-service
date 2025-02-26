@@ -63,27 +63,77 @@ Available commands:
   make test         - Run tests
   make test-cover   - Run tests with coverage report
   make clean        - Remove build artifacts
-  make lint         - Run golangci-lint
-  make fmt          - Run go fmt on all source files
+  make lint         - Run all linters (Go, Shell, YAML)
+  make fmt          - Format all source files (Go, Shell, YAML)
   make tidy         - Run go mod tidy
   make embedmd      - Update code snippets in the README
   make embedmd-check - Check if README code snippets are up-to-date
+  make shellcheck   - Run shellcheck on shell scripts
+  make shfmt        - Format shell scripts
+  make yamlfmt      - Format YAML files with yamlfmt
+  make install-linters - Install Go-based linting tools
   make help         - Show this help message
 ```
 
 ## Linting
 
-The project uses golangci-lint for code quality checking. Install it with:
+The project uses several linters to ensure code quality:
+
+### Go Code Linting
+
+Go code is linted using golangci-lint, which includes multiple linters in one tool:
 
 ```bash
-make lint-install
+make lint-go
 ```
 
-Then run the linter with:
+### Shell Script Linting
+
+Shell scripts are linted using shellcheck, a static analysis tool that gives warnings and suggestions:
+
+```bash
+make shellcheck
+```
+
+To format shell scripts according to a consistent style using the Go-based `shfmt` tool:
+
+```bash
+make shfmt
+```
+
+### YAML Linting
+
+YAML files are formatted and validated using Google's yamlfmt, a Go-based YAML formatter with validation capabilities:
+
+```bash
+make yamlfmt
+```
+
+### Run All Linters
+
+To run all linters at once:
 
 ```bash
 make lint
 ```
+
+To run linters and formatters with auto-fixing enabled:
+
+```bash
+make fix-all
+```
+
+### Installing Linting Tools
+
+Install all required Go-based linting tools:
+
+```bash
+make install-linters
+```
+
+This will install `yamlfmt` and other Go-based tools. Note that shellcheck must be installed separately using your OS package manager:
+- macOS: `brew install shellcheck`
+- Ubuntu/Debian: `sudo apt-get install shellcheck`
 
 ## Documentation
 
@@ -137,7 +187,9 @@ Example of an API handler:
 
 [embedmd]:# (handlers/handlers.go /func HomeHandler/ /^}/)
 ```go
-func HomeHandler(w http.ResponseWriter, _ *http.Request) {
+func HomeHandler(w http.ResponseWriter, r *http.Request) {
+	slog.Info("Handling home request", "path", r.URL.Path, "method", r.Method)
+
 	response := map[string]string{
 		"message": "Welcome to the API",
 	}
@@ -150,7 +202,9 @@ Health check endpoint:
 
 [embedmd]:# (handlers/handlers.go /func HealthCheckHandler/ /^}/)
 ```go
-func HealthCheckHandler(w http.ResponseWriter, _ *http.Request) {
+func HealthCheckHandler(w http.ResponseWriter, r *http.Request) {
+	slog.Debug("Health check requested", "remote_addr", r.RemoteAddr)
+
 	response := map[string]string{
 		"status": "healthy",
 	}

@@ -10,7 +10,6 @@ services:
       - INFLUXDB_HTTP_AUTH_ENABLED=false
     volumes:
       - influxdb-data:/var/lib/influxdb
-
   grafana:
     image: grafana/grafana:10.3.3
     ports:
@@ -24,7 +23,6 @@ services:
       - ./grafana/provisioning:/etc/grafana/provisioning
     depends_on:
       - influxdb
-
 volumes:
   influxdb-data:
-  grafana-data: 
+  grafana-data:

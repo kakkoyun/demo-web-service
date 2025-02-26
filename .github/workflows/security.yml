@@ -1,13 +1,11 @@
 name: Security Scan
-
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
   schedule:
-    - cron: '0 0 * * 0'  # Run weekly on Sundays
-
+    - cron: '0 0 * * 0' # Run weekly on Sundays
 jobs:
   security-check:
     name: Security Scan
@@ -15,17 +13,22 @@ jobs:
     steps:
       - name: Check out code
         uses: actions/checkout@v4
-
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
           go-version: '1.24'
           check-latest: true
-
       - name: Run Gosec Security Scanner
         uses: securego/gosec@master
         with:
           args: ./...
-
       - name: Run Vulnerability Check
-        run: go tool govulncheck ./... 
+        run: go tool govulncheck ./...
+      - name: Install shellcheck
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y shellcheck
+      - name: Run shellcheck security scan
+        run: |
+          # Find all shell scripts and run shellcheck with security focus
+          find . -name "*.sh" -not -path "./vendor/*" -exec shellcheck --severity=warning --enable=all {} \;
