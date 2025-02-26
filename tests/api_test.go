@@ -5,12 +5,25 @@ import (
 	"io"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"strings"
 	"testing"
 
 	"github.com/kakkoyun/demo-web-service/handlers"
 	"github.com/kakkoyun/demo-web-service/models"
 )
+
+// TestMain sets up the testing environment
+func TestMain(m *testing.M) {
+	// Enable test mode to disable random failures
+	handlers.TestMode = true
+
+	// Run all tests
+	exitCode := m.Run()
+
+	// Exit with the same code
+	os.Exit(exitCode)
+}
 
 // setupAPITest creates a test server with the application's routes
 func setupAPITest() *httptest.Server {

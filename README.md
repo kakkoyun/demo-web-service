@@ -55,7 +55,6 @@ The server will start on port 8080 by default.
 
 The project includes a Makefile with common tasks:
 
-[embedmd]:# (tmp/help.txt)
 ```txt
 Available commands:
   make build        - Build the application
@@ -189,6 +188,13 @@ Example of an API handler:
 ```go
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	slog.Info("Handling home request", "path", r.URL.Path, "method", r.Method)
+
+	// Randomly generate an error 10% of the time (but not in test mode)
+	if !TestMode && rand.Intn(10) == 0 {
+		slog.Error("Random error in home handler", "error", "random service unavailable")
+		errorResponse(w, http.StatusServiceUnavailable, "Service temporarily unavailable")
+		return
+	}
 
 	response := map[string]string{
 		"message": "Welcome to the API",

@@ -5,12 +5,25 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"strconv"
 	"strings"
 	"testing"
 
 	"github.com/kakkoyun/demo-web-service/models"
 )
+
+// TestMain sets up the testing environment
+func TestMain(m *testing.M) {
+	// Enable test mode to disable random failures
+	TestMode = true
+
+	// Run all tests
+	exitCode := m.Run()
+
+	// Exit with the same code
+	os.Exit(exitCode)
+}
 
 func TestGetUsersHandler(t *testing.T) {
 	// Create a request

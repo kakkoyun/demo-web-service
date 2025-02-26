@@ -2,6 +2,8 @@ package main
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"log/slog"
 	"net/http"
 	"os"
@@ -17,6 +19,23 @@ import (
 func main() {
 	// Initialize structured logger
 	logger := setupLogger()
+
+	// Set up panic recovery for the entire application
+	defer func() {
+		if r := recover(); r != nil {
+			// Capture stack trace for the panic
+			stackTrace := string(debug.Stack())
+			err := fmt.Errorf("panic recovered: %v", r)
+
+			logger.Error("PANIC RECOVERED",
+				"error", err,
+				"panic", r,
+				"stack_trace", stackTrace)
+
+			// In a real app, this would be reported to your error tracking service
+			os.Exit(1)
+		}
+	}()
 
 	// Get build info
 	buildInfo := getBuildInfo()
@@ -49,6 +68,7 @@ func main() {
 	// Apply middleware
 	var handler http.Handler = mux
 	handler = handlers.LoggingMiddleware(handler)
+	handler = recoverMiddleware(handler) // Add panic recovery with stack traces
 
 	// Configure server
 	srv := &http.Server{
@@ -62,8 +82,10 @@ func main() {
 	// Start server in a goroutine
 	go func() {
 		logger.Info("Starting server", "port", cfg.ServerPort)
-		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			logger.Error("Server failed to start", "error", err)
+		if err := srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
+			wrappedErr := fmt.Errorf("server failed to start: %w", err)
+			logger.Error("Server failed to start",
+				"error", wrappedErr)
 			os.Exit(1)
 		}
 	}()
@@ -83,11 +105,43 @@ func main() {
 	// Doesn't block if no connections, but will otherwise wait
 	// until the timeout deadline
 	if err := srv.Shutdown(ctx); err != nil {
-		logger.Error("Server forced to shutdown", "error", err)
+		wrappedErr := fmt.Errorf("server forced to shutdown: %w", err)
+		logger.Error("Server forced to shutdown",
+			"error", wrappedErr)
 	}
 
 	logger.Info("Server exited properly")
 	os.Exit(0)
+}
+
+// recoverMiddleware is a middleware that recovers from panics and logs the error with stack trace
+func recoverMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		defer func() {
+			if rec := recover(); rec != nil {
+				// Get stack trace
+				stackTrace := string(debug.Stack())
+
+				// Create an error with the panic details
+				err := fmt.Errorf("panic in HTTP handler: %v", rec)
+
+				// Log the error with stack trace
+				slog.Error("HTTP handler panic recovered",
+					"error", err,
+					"panic", rec,
+					"url", r.URL.String(),
+					"method", r.Method,
+					"stack_trace", stackTrace)
+
+				// Return a 500 error to the client
+				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+
+				// In a real app, this would also be sent to your error tracking service
+			}
+		}()
+
+		next.ServeHTTP(w, r)
+	})
 }
 
 // VersionInfo stores application version information
