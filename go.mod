@@ -129,7 +129,7 @@ require (
 	github.com/go-chi/chi v1.5.4 // indirect
 	github.com/go-chi/chi/v5 v5.0.10 // indirect
 	github.com/go-critic/go-critic v0.12.0 // indirect
-	github.com/go-jose/go-jose/v3 v3.0.3 // indirect
+	github.com/go-jose/go-jose/v3 v3.0.4 // indirect
 	github.com/go-logr/logr v1.4.2 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/go-ole/go-ole v1.3.0 // indirect
