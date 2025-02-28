@@ -5,7 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
-	"math/rand"
+	"math/rand/v2"
 	"net/http"
 	"runtime/debug"
 	"strconv"
@@ -25,7 +25,7 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	slog.Info("Handling home request", "path", r.URL.Path, "method", r.Method)
 
 	// Randomly generate an error 10% of the time (but not in test mode)
-	if !TestMode && rand.Intn(10) == 0 {
+	if !TestMode && rand.IntN(10) == 0 {
 		slog.Error("Random error in home handler", "error", "random service unavailable")
 		errorResponse(w, http.StatusServiceUnavailable, "Service temporarily unavailable")
 		return
@@ -54,7 +54,7 @@ func GetUsersHandler(w http.ResponseWriter, r *http.Request) {
 	slog.Info("Getting all users", "path", r.URL.Path)
 
 	// Randomly generate an error 20% of the time (but not in test mode)
-	if !TestMode && rand.Intn(5) == 0 {
+	if !TestMode && rand.IntN(5) == 0 {
 		// Simple error handling - just log and return an error
 		err := errors.New("database connection failed")
 		slog.Error("Failed to get users", "error", err)
@@ -123,7 +123,7 @@ var (
 // validateAndCreateUser demonstrates nested function calls with error wrapping
 func validateAndCreateUser(_ *http.Request) error {
 	// Randomly generate validation errors
-	if !TestMode && rand.Intn(3) == 0 {
+	if !TestMode && rand.IntN(3) == 0 {
 		return errtrace.Wrap(fmt.Errorf("%w: required fields missing", ErrValidation))
 	}
 
@@ -139,7 +139,7 @@ func validateAndCreateUser(_ *http.Request) error {
 // processUserData is a nested function that might return errors
 func processUserData() error {
 	// Randomly fail this operation (but not in test mode)
-	if !TestMode && rand.Intn(4) == 0 {
+	if !TestMode && rand.IntN(4) == 0 {
 		return errtrace.Wrap(errors.New("database constraint violation"))
 	}
 
@@ -147,7 +147,7 @@ func processUserData() error {
 	if TestMode {
 		time.Sleep(time.Millisecond)
 	} else {
-		time.Sleep(time.Millisecond * time.Duration(rand.Intn(100)))
+		time.Sleep(time.Millisecond * time.Duration(rand.IntN(100)))
 	}
 
 	return nil
@@ -197,7 +197,7 @@ func GetUserHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Randomly generate "not found" errors for valid IDs over 10 (but not in test mode)
-	if !TestMode && id > 10 && rand.Intn(2) == 0 {
+	if !TestMode && id > 10 && rand.IntN(2) == 0 {
 		notFoundErr := fmt.Errorf("%w: ID %d", ErrUserNotFound, id)
 		slog.Error("User not found",
 			"id", id,
@@ -235,7 +235,7 @@ func queryDatabase(id int) error {
 	}
 
 	// Use id in random error generation
-	errorChance := rand.Intn(10)
+	errorChance := rand.IntN(10)
 
 	// IDs divisible by 5 have a higher chance of connection timeout
 	if id%5 == 0 && errorChance < 3 {
