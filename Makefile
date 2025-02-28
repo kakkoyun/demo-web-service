@@ -5,6 +5,10 @@ MAIN_PATH=./cmd/api
 SHELL_FILES := $(shell find . -name "*.sh" -not -path "./vendor/*")
 YAML_FILES := $(shell find . -name "*.yml" -o -name "*.yaml" -not -path "./vendor/*")
 
+GOFLAGS := GOFLAGS="${GOFLAGS} '-toolexec=orchestrion toolexec'"
+DATADOG_ENV_VARS := DD_ENV=kakkoyun/local DD_SERVICE=demo-web-service DD_VERSION=0.0.0 DD_TAGS=env:local,version:0.0.0
+DATADOG_DEBUG_ENV_VARS := DD_TRACE_DEBUG=true DD_RUNTIME_METRICS_ENABLED=true DD_PROFILING_ENABLED=true DD_DOGSTATSD_PORT=8135 DD_TRACE_AGENT_PORT=8136
+
 help:
 	@echo "Available commands:"
 	@echo "  make build        - Build the application"
@@ -27,13 +31,18 @@ build:
 	@echo "Building..."
 	@go build -o $(BINARY_NAME) $(MAIN_PATH)
 
+build-instrumented:
+	@echo "Building instrumented..."
+	# @go build -toolexec "go tool errtrace toolexec" -o $(BINARY_NAME)-instrumented $(MAIN_PATH)
+	go build -toolexec 'orchestrion toolexec' -o $(BINARY_NAME)-instrumented $(MAIN_PATH)
+
 run: build
 	@echo "Running..."
 	@./$(BINARY_NAME)
 
 dev:
-	@echo "Running in development mode..."
-	@go run $(MAIN_PATH)
+	@echo "Running in development mode with Datadog tracing..."
+	$(DATADOG_ENV_VARS) $(DATADOG_DEBUG_ENV_VARS) $(GOFLAGS) go run $(MAIN_PATH)
 
 test:
 	@echo "Running tests..."
@@ -125,5 +134,9 @@ tidy:
 	@echo "Tidying up module dependencies..."
 	@go mod tidy
 
+inject-error-traces:
+	@echo "Injecting error traces..."
+	@go tool errtrace -w ./...
+
 # Default target
-.DEFAULT_GOAL := help 
+.DEFAULT_GOAL := help

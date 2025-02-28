@@ -11,6 +11,8 @@ import (
 	"strconv"
 	"time"
 
+	"braces.dev/errtrace"
+
 	"github.com/kakkoyun/demo-web-service/models"
 )
 
@@ -122,13 +124,13 @@ var (
 func validateAndCreateUser(_ *http.Request) error {
 	// Randomly generate validation errors
 	if !TestMode && rand.Intn(3) == 0 {
-		return fmt.Errorf("%w: required fields missing", ErrValidation)
+		return errtrace.Wrap(fmt.Errorf("%w: required fields missing", ErrValidation))
 	}
 
 	// Try to process the user data
 	if err := processUserData(); err != nil {
 		// Wrap the lower-level error
-		return fmt.Errorf("user processing failed: %w", err)
+		return errtrace.Wrap(fmt.Errorf("user processing failed: %w", err))
 	}
 
 	return nil
@@ -138,7 +140,7 @@ func validateAndCreateUser(_ *http.Request) error {
 func processUserData() error {
 	// Randomly fail this operation (but not in test mode)
 	if !TestMode && rand.Intn(4) == 0 {
-		return errors.New("database constraint violation")
+		return errtrace.Wrap(errors.New("database constraint violation"))
 	}
 
 	// Simulate slow processing (minimal in test mode)
@@ -237,17 +239,17 @@ func queryDatabase(id int) error {
 
 	// IDs divisible by 5 have a higher chance of connection timeout
 	if id%5 == 0 && errorChance < 3 {
-		return errors.New("connection timeout")
+		return errtrace.Wrap(errors.New("connection timeout"))
 	}
 
 	// IDs divisible by 3 have a higher chance of query execution failure
 	if id%3 == 0 && errorChance < 3 {
-		return errors.New("query execution failed")
+		return errtrace.Wrap(errors.New("query execution failed"))
 	}
 
 	// Very high IDs might cause a constraint error
 	if id > 1000 && errorChance < 2 {
-		return errors.New("primary key constraint violation")
+		return errtrace.Wrap(errors.New("primary key constraint violation"))
 	}
 
 	return nil

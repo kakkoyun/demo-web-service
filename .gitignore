@@ -8,6 +8,7 @@
 *.so
 *.dylib
 demo-web-service
+demo-web-service-instrumented
 
 # Test binary, built with `go test -c`
 *.test
