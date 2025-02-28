@@ -3,20 +3,6 @@ run:
   timeout: 5m
   # Include test files or not
   tests: true
-# Linters settings
-linters-settings:
-  errcheck:
-    # Check for unchecked errors in type assertions: `a := b.(MyStruct)`
-    check-type-assertions: true
-  goimports:
-    # Put imports beginning with prefix after 3rd-party packages
-    local-prefixes: github.com/kakkoyun/demo-web-service
-  govet:
-    # Enable all analyzers
-    enable-all: true
-  misspell:
-    # Correct spellings using locale preferences
-    locale: US
 # Enabled linters
 linters:
   enable:
@@ -32,6 +18,26 @@ linters:
     - misspell # Fix misspellings
     - unconvert # Remove unnecessary type conversions
     - revive # Fast, configurable, extensible linter for Go
+    - gosec # Go security checker
+# Linters settings
+linters-settings:
+  errcheck:
+    # Check for unchecked errors in type assertions: `a := b.(MyStruct)`
+    check-type-assertions: true
+  goimports:
+    # Put imports beginning with prefix after 3rd-party packages
+    local-prefixes: github.com/kakkoyun/demo-web-service
+  govet:
+    # Enable all analyzers
+    enable-all: true
+  misspell:
+    # Correct spellings using locale preferences
+    locale: US
+  gosec:
+    config:
+      global:
+        nosec: true
+        show-ignored: true
 # Issues configuration
 issues:
   # Maximum count of issues with the same text

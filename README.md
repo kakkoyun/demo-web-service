@@ -190,7 +190,8 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	slog.Info("Handling home request", "path", r.URL.Path, "method", r.Method)
 
 	// Randomly generate an error 10% of the time (but not in test mode)
-	if !TestMode && rand.IntN(10) == 0 {
+	// #nosec G404 -- This is a false positive
+	if !TestMode && rand.IntN(10) == 0 { //nolint:gosec
 		slog.Error("Random error in home handler", "error", "random service unavailable")
 		errorResponse(w, http.StatusServiceUnavailable, "Service temporarily unavailable")
 		return
